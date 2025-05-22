@@ -1,7 +1,51 @@
 [project]
-name = "python-nix"
+name = "lumax"
 version = "0.1.0"
-description = "Add your description here"
+description = "Reflectance models in python"
+authors = [{ name = "Mirza Arnaut", email = "mirza.arnaut@tu-dortmund.de" }]
+license = { text = "MIT" }
 readme = "README.md"
-requires-python = ">=3.10"
-dependencies = []
+requires-python = ">=3.10,<3.13"
+dependencies = [
+  "numpy>=2.2.6",
+  "jax>=0.6.1",
+  "jaxopt>=0.8.5",
+  "optimistix>=0.0.10",
+]
+
+[dependency-groups]
+test = [
+  "astropy>=6.0.0",
+  #"coverage>=7.4.1",
+  "pytest>=8.0.0",
+  #"pytest-cov>=4.1.0",
+  # "streamlit>=1.36.0",
+]
+docs = [
+  "mkdocs>=1.6.0",
+  "mkdocs-material>=9.5.28",
+  "mkdocstrings>=0.25.1",
+  "mkdocs-autorefs>=1.0.1",
+  "mkdocs-gen-files>=0.5.0",
+  "mkdocs-literate-nav>=0.6.1",
+  "mkdocs-section-index>=0.3.9",
+  "mkdocs-awesome-pages-plugin>=2.9.2",
+  "mkdocs-bibtex>=2.16.0",
+]
+
+[tool.pytest.ini_options]
+python_files = "test/test_*.py"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+# [build-system]
+# requires = ["setuptools", "setuptools-scm"]
+# build-backend = "setuptools.build_meta"
+
+[semantic_release]
+version_variable = ["lumax/__init__.py:__version__"]
+version_toml = ["pyproject.toml:project.version:nf"]
+major_on_zero = false
+branch = "main"
+build_command = "curl -LsSf https://astral.sh/uv/install.sh | sh && source $HOME/.local/bin/env && uv build"

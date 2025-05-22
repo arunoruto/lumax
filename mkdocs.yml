@@ -1,0 +1,81 @@
+site_name: RefMod
+site_description: Reflectance Models @ BV
+site_url: https://python-frameworks.pages.bv.e-technik.tu-dortmund.de/reflectance-models
+repo_url: https://gitlab.bv.e-technik.tu-dortmund.de/python-frameworks/reflectance-models
+dev_addr: 0.0.0.0:8000
+
+nav:
+  - Home: index.md
+  - Code: reference/
+
+# Design
+theme:
+  name: material
+
+plugins:
+  - search:
+      lang: en
+  - autorefs
+  # - awesome-pages
+  - literate-nav:
+      nav_file: summary.md
+  - gen-files:
+      scripts:
+        - scripts/gen_ref_pages.py
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths:
+            - refmod
+          hide:
+            - instance-attribute
+          options:
+            docstring_options:
+              ignore_init_summary: true
+            # General options: various options that do not fit in the other categories
+            show_bases: true
+            show_source: true
+            # Headings options: options related to headings and the table of contents (or sidebar, depending on the theme used)
+            # parameter_headings: true
+            show_root_heading: false
+            show_root_toc_entry: false
+            show_root_full_path: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            # Members options: options related to filtering or ordering members in the generated documentation
+            members_order: source
+            summary: false
+            show_labels: false
+            # Docstrings options: options related to docstrings (parsing and rendering)
+            docstring_style: google
+            docstring_section_style: table
+            merge_init_into_class: true
+            # show_if_no_docstring: true
+            # Signature options: options related to signatures and type annotations
+            show_signature: false
+            separate_signature: false
+            signature_crossrefs: true
+            # heading_level: 2
+  # - bibtex:
+  #     bib_file: "./docs/library.bib"
+  #     csl_file: "./docs/elsevier-harvard.csl"
+  #     cite_inline: true
+
+# https://squidfunk.github.io/mkdocs-material/reference/math/#mathjax
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
