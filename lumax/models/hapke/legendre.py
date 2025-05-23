@@ -8,15 +8,16 @@
 
 from functools import partial
 
-# import numpy as np
-# import numpy.typing as npt
 import jax
 import jax.numpy as jnp
 from jax.typing import ArrayLike
+from jaxtyping import Array, Float
+
+DEFAULT_N = 15
 
 
 @partial(jax.jit, static_argnums=(0,))
-def coef_a(n: int = 15):
+def coef_a(n: int = DEFAULT_N) -> Float[Array, " n"]:
     """
     Calculates the coefficients 'a_n' for the Legendre polynomial series.
 
@@ -41,8 +42,8 @@ def coef_a(n: int = 15):
 
 
 # @partial(jax.jit, static_argnames=["n"])
-@partial(jax.jit, static_argnums=(2,))
-def coef_b_single(b: float, c: float, n: int):
+@partial(jax.jit, static_argnums=(1,))
+def coef_b_single(b: float, n: int = DEFAULT_N) -> Float[Array, " n"]:
     # n = 15
     # range = np.arange(1, n + 2)
     range = jax.lax.iota(int, n + 1) + 1
@@ -52,7 +53,7 @@ def coef_b_single(b: float, c: float, n: int):
 
 # @partial(jax.jit, static_argnames=["n"])
 @partial(jax.jit, static_argnums=(2,))
-def coef_b_double(b: float, c: float, n: int):
+def coef_b_double(b: float, c: float, n: int = DEFAULT_N) -> Float[Array, " n"]:
     # range = np.arange(n + 1)
     # print(n[0])
     # n = 15
@@ -64,7 +65,7 @@ def coef_b_double(b: float, c: float, n: int):
 
 
 # @partial(jax.jit, static_argnums=(2,))
-def coef_b(b: float, c: float, n: int = 15):
+def coef_b(b: float, c: float = jnp.nan, n: int = DEFAULT_N) -> Float[Array, " n"]:
     """
     Calculates the coefficients for the Hapke reflectance model Legendre polynomial expansion.
 
@@ -79,13 +80,19 @@ def coef_b(b: float, c: float, n: int = 15):
     Note:
         Equation on page 530 in Hapke (2002).
     """
-    return coef_b_single(b, n) if jnp.isnan(c) else coef_b_double(b, c, n)
-    # args = (b, c, n)
-    # return jax.lax.cond(
-    # jnp.isnan(c),
-    # coef_b_single,
-    # coef_b_double,
-    # *args,
+    return jax.lax.cond(
+        jnp.isnan(c),
+        lambda x, y: coef_b_single(x, n),
+        lambda x, y: coef_b_double(x, y, n),
+        # lambda x: coef_b_single(x[0], x[1], x[2]),
+        # lambda x: coef_b_double(x[0], x[1], x[2]),
+        b,
+        c,
+    )
+    # return jax.lax.select(
+    #     jnp.isnan(c),
+    #     coef_b_single(b, c, n),
+    #     coef_b_double(b, c, n),
     # )
 
 

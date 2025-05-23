@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
-from jax.lib import xla_bridge
+import jax
+from jax.extend import backend
 
-print(xla_bridge.get_backend().platform)
+print(jax.devices())
+print(backend.get_backend().platform)

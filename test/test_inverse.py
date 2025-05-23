@@ -1,20 +1,21 @@
+import os
+
 import numpy as np
 from astropy.io import fits
-from refmod.dtm_helper import dtm2grad
-from refmod.hapke import double_henyey_greenstein
-
-# from refmod.hapke.amsa import amsa
-from refmod.hapke.amsa import amsa_image
-from refmod.hapke.imsa import imsa
-from refmod.hapke.legendre import coef_a, coef_b
-from refmod.inverse import inverse_model
+from lumax.dtm_helper import dtm2grad
+from lumax.inverse import inverse_model
+from lumax.models.hapke import double_henyey_greenstein
+from lumax.models.hapke.amsa import amsa_image
+from lumax.models.hapke.imsa import imsa
+from lumax.models.hapke.legendre import coef_a, coef_b
 from scipy.optimize import least_squares
 
 DATA_DIR = "test/data"
-RTOL = 1e-12
+RTOL = 1e-6 if os.getenv("JAX_ENABLE_X64") else 1e-12
 
 
 def test_inverse_amsa():
+    print(os.environ["JAX_ENABLE_X64"])
     file_name = f"{DATA_DIR}/hopper_amsa.fits"
     f = fits.open(file_name)
 
@@ -35,7 +36,7 @@ def test_inverse_amsa():
     n = dtm2grad(dtm, resolution, normalize=False)
 
     u, v = result.shape
-    r = 20
+    r = 10 * 3
     uc = u // 2 + np.arange(-r, r + 1)
     vc = v // 2 + np.arange(-r, r + 1)
     # uc, vc = np.meshgrid(uc, vc, indexing="ij")

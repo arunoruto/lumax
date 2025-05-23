@@ -3,7 +3,7 @@ import jax.numpy as np
 import optimistix as optx
 from jax.typing import ArrayLike
 
-from refmod.hapke import amsa_image_opt
+from lumax.models.hapke import amsa_image_opt
 
 # from refmod.hapke import amsa_image_derivative
 
@@ -13,6 +13,7 @@ def amsa_optx_wrapper(x, args):
     return amsa_image_opt(x, *args)
 
 
+@jax.profiler.annotate_function
 def inverse_model(
     refl: ArrayLike,
     incidence_direction: ArrayLike,
@@ -49,5 +50,7 @@ def inverse_model(
         atol=1e-8,
         # norm=optx.rms_norm,
     )
-    sol = optx.least_squares(amsa_optx_wrapper, solver, x0, args)
+    # with jax.named_scope("optimistix_least_squares_solve"):
+    with jax.profiler.TraceAnnotation("optimistix_least_squares_solve"):
+        sol = optx.least_squares(amsa_optx_wrapper, solver, x0, args)
     return sol.value

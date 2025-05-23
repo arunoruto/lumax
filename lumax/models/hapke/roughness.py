@@ -6,14 +6,11 @@
     <https://doi.org/10.1016/0019-1035(84)90054-X>
 """
 
-# import numpy as np
-# import numpy.typing as npt
 import jax
 import jax.numpy as np
 from jax import Array
 from jax.typing import ArrayLike
-
-from refmod.hapke.functions import normalize_vec
+from lumax.core.geometry import normalize_vec
 
 
 @jax.jit
@@ -128,6 +125,7 @@ def microscopic_roughness(
     surface_orientation = normalize_vec(surface_orientation)
 
     # Incidence angle
+    # NOTE: takes long 3 (sum -> reduction)
     cos_i = np.sum(incidence_direction * surface_orientation, axis=-1)
     cos_i = np.array([cos_i]) if isinstance(cos_i, float) else cos_i
     cos_i = np.clip(cos_i, -1, 1)
@@ -135,8 +133,8 @@ def microscopic_roughness(
     # tan_i = sin_i / cos_i
     # cot_i = np.divide(1, tan_i, out=np.ones_like(tan_i) * np.inf, where=tan_i != 0)
     # cot_i = np.divide(cos_i, sin_i, out=np.ones_like(cos_i) * np.inf, where=sin_i != 0)
-    cot_i = np.where(sin_i == 0, np.inf, cos_i / sin_i)
-    i = np.arccos(cos_i)
+    cot_i = np.where(sin_i == 0, np.inf, cos_i / sin_i)  # NOTE: takes long 5
+    i = np.arccos(cos_i)  # NOTE: takes long 6
 
     # Emission angle
     cos_e = np.sum(emission_direction * surface_orientation, axis=-1)
@@ -152,12 +150,10 @@ def microscopic_roughness(
 
     # Projections
     projection_incidence = normalize_vec(
-        incidence_direction
-        - np.expand_dims(cos_i, axis=-1) * surface_orientation
+        incidence_direction - np.expand_dims(cos_i, axis=-1) * surface_orientation
     )
     projection_emission = normalize_vec(
-        emission_direction
-        - np.expand_dims(cos_e, axis=-1) * surface_orientation
+        emission_direction - np.expand_dims(cos_e, axis=-1) * surface_orientation
     )
 
     # Azicos_eth angle
@@ -175,7 +171,7 @@ def microscopic_roughness(
     ile = i < e
     ige = i >= e
     # Check for singularities
-    mask = (cos_i == 1) | (cos_e == 1)
+    mask = (cos_i == 1) | (cos_e == 1)  # NOTE: takes long 1
 
     factor = 1 / np.sqrt(1 + np.pi * tan_rough**2)
     # f_psi = np.exp(
@@ -187,7 +183,7 @@ def microscopic_roughness(
     #         where=cos_psi != -1,
     #     )
     # )
-    f_psi = np.exp(-2 * sin_psi / (1 + cos_psi))
+    f_psi = np.exp(-2 * sin_psi / (1 + cos_psi))  # NOTE: takes long 4
 
     cos_i_s0 = factor * (
         cos_i

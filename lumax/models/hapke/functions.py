@@ -46,11 +46,7 @@ def h_function_2_derivative(x: ArrayLike, w: ArrayLike) -> ArrayLike:
     return (
         h**2
         * x
-        * (
-            r0
-            + (1 - 2 * r0 * x) / 2 * x_log_term
-            + w * dr0_dw * (1 - x * x_log_term)
-        )
+        * (r0 + (1 - 2 * r0 * x) / 2 * x_log_term + w * dr0_dw * (1 - x * x_log_term))
     )
 
 
@@ -81,7 +77,7 @@ def h_function(x: ArrayLike, w: ArrayLike, level: int = 1) -> ArrayLike:
     return h
 
 
-def h_function_derivative(x:ArrayLike, w: ArrayLike, level: int = 1) -> ArrayLike:
+def h_function_derivative(x: ArrayLike, w: ArrayLike, level: int = 1) -> ArrayLike:
     """
     Calculates the Hapke function for a given set of parameters.
 
@@ -109,7 +105,7 @@ def h_function_derivative(x:ArrayLike, w: ArrayLike, level: int = 1) -> ArrayLik
 
 
 @jax.jit
-def double_henyey_greenstein(cos_g:ArrayLike, b: float = 0.21, c: float = 0.7):
+def double_henyey_greenstein(cos_g: ArrayLike, b: float = 0.21, c: float = 0.7):
     """
     Calculates the phase function for the double Henyey-Greenstein model.
 
@@ -151,9 +147,3 @@ def cornette_shanks(cos_g: ArrayLike, xi: float):
         / np.power(1 + xi**2 - 2 * xi * cos_g, 1.5)
     )
     return p_g
-
-
-def normalize_vec(x: Array) -> Array:
-    return x / np.expand_dims(
-        np.sqrt(x[0, ...] ** 2 + x[1, ...] ** 2 + x[2, ...] ** 2), axis=0
-    )

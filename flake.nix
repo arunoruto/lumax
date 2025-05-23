@@ -57,7 +57,7 @@
         }:
         let
           # Change this name as you would import it in your python scripts
-          package-name = "localpackage";
+          package-name = "lumax";
 
           project = pyproject-nix.lib.project.loadPyproject { projectRoot = ./.; };
           workspace = uv2nix.lib.workspace.loadWorkspace { workspaceRoot = ./.; };
@@ -135,7 +135,15 @@
 
                 editablePythonSet = pythonSet.overrideScope editableOverlay;
 
-                virtualenv = editablePythonSet.mkVirtualEnv "${package-name}-dev-env" workspace.deps.default;
+                virtualenv = editablePythonSet.mkVirtualEnv "${package-name}-dev-env" (
+                  workspace.deps.default
+                  // {
+                    "${package-name}" = [
+                      "test"
+                      "profiling"
+                    ];
+                  }
+                );
 
               in
               pkgs.mkShell {

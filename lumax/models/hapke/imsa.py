@@ -2,9 +2,8 @@ from typing import Callable
 
 import numpy as np
 import numpy.typing as npt
-
-from refmod.hapke.functions import h_function
-from refmod.hapke.roughness import microscopic_roughness
+from lumax.models.hapke.functions import h_function
+from lumax.models.hapke.roughness import microscopic_roughness
 
 
 def imsa(
@@ -51,15 +50,9 @@ def imsa(
         single_scattering_albedo *= np.ones(surface_orientation.shape[:2])
 
     # Angles
-    incidence_direction /= np.linalg.norm(
-        incidence_direction, axis=2, keepdims=True
-    )
-    emission_direction /= np.linalg.norm(
-        emission_direction, axis=2, keepdims=True
-    )
-    surface_orientation /= np.linalg.norm(
-        surface_orientation, axis=2, keepdims=True
-    )
+    incidence_direction /= np.linalg.norm(incidence_direction, axis=2, keepdims=True)
+    emission_direction /= np.linalg.norm(emission_direction, axis=2, keepdims=True)
+    surface_orientation /= np.linalg.norm(surface_orientation, axis=2, keepdims=True)
 
     # Phase angle
     cos_alpha = np.sum(incidence_direction * emission_direction, axis=2)

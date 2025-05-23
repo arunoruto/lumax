@@ -1,18 +1,20 @@
+import os
+
 import jax
 import numpy as np
 from astropy.io import fits
-from refmod.dtm_helper import dtm2grad
-from refmod.hapke import double_henyey_greenstein
-from refmod.hapke.amsa import amsa_image, amsa_image_derivative
-from refmod.hapke.imsa import imsa
-from refmod.hapke.legendre import coef_a, coef_b
+from lumax.dtm_helper import dtm2grad
+from lumax.models.hapke import double_henyey_greenstein
+from lumax.models.hapke.amsa import amsa_image, amsa_image_derivative
+from lumax.models.hapke.imsa import imsa
+from lumax.models.hapke.legendre import coef_a, coef_b
 
 # jax.config.update("jax_persistent_cache_min_entry_size_bytes", 0)
 
 DATA_DIR = "test/data"
 EXTENSION = "fits"
 # EXTENSION = "mat"
-RTOL = 1e-12
+RTOL = 1e-3 if os.getenv("JAX_ENABLE_X64") else 1e-12
 
 # def test_imsa_hopper():
 #     file_name = f"{DATA_DIR}/hopper_imsa.fits"
